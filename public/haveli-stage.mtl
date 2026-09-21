@@ -1,0 +1,43 @@
+# Haveli previz — approximate materials (see src/palette.js)
+
+newmtl deck
+Kd 0.169 0.180 0.200
+Ka 0.169 0.180 0.200
+
+newmtl carpet
+Kd 0.812 0.784 0.761
+Ka 0.812 0.784 0.761
+
+newmtl wall
+Kd 0.906 0.890 0.847
+Ka 0.906 0.890 0.847
+
+newmtl cordon
+Kd 0.698 0.682 0.639
+Ka 0.698 0.682 0.639
+
+newmtl led_surface
+Kd 0.067 0.067 0.067
+Ka 0.067 0.067 0.067
+
+newmtl led_body
+Kd 0.051 0.059 0.071
+Ka 0.051 0.059 0.071
+
+newmtl drape
+Kd 0.114 0.102 0.090
+Ka 0.114 0.102 0.090
+
+newmtl cabin
+Kd 0.847 0.835 0.804
+Ka 0.847 0.835 0.804
+
+newmtl glass
+Kd 0.624 0.769 0.847
+Ka 0.624 0.769 0.847
+d 0.4
+
+newmtl chair
+Kd 0.549 0.290 0.235
+Ka 0.549 0.290 0.235
+

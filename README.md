@@ -1,0 +1,90 @@
+# haveli-stage
+
+The Haveli stage in 3D, for two jobs: seeing content on the back LED at its
+real size and resolution, and seeing what six moving heads do to the set.
+Same chassis as `ovo.content.baps.solutions` (Next.js 15, Three.js, Tailwind 4,
+Vercel) with none of the OVO-specific pipeline — the model loads straight from
+`public/haveli-stage.obj`.
+
+One page, `/stage`. Everything is a control on the left; every control is in
+the share link.
+
+## Run it
+
+```bash
+npm install
+npm run dev        # http://localhost:3000
+```
+
+## Share it
+
+Push the folder to a GitHub repo and import it into Vercel — no settings
+needed (`vercel.json` says it's Next.js). Or from the folder:
+
+```bash
+npx vercel deploy --prod
+```
+
+Once it's up, **Copy link** in the Share section gives a URL that opens the
+exact look: every head's pan/tilt/colour/zoom/position, the LED pattern, haze,
+house light, camera, guides. Send that to whoever needs to see it. Looks also
+autosave in the browser, and export/import as JSON. An uploaded clip can't
+travel in a link — send the file with it, they drop it on **Upload**.
+
+## The LED — brief for content
+
+| | |
+| --- | --- |
+| Raster | **10240 × 1920** (5.33:1) |
+| Physical | 25.6 × 4.8 m at 2.5 mm pitch — the raster is the wall 1:1 |
+| Origin | top-left; one picture, house left → house right |
+| Bottom edge | +1.605 m above the hall floor, 0.3 m above the +1.3 m deck |
+| Cabin | stands in front of px **3632–6608** across, **576–1898** down (see the *Cabin zone* guide and the *Test card*) |
+
+Content at 10240 × 1920 lands edge to edge. Anything else is cover-fitted
+(fills the wall, crops the excess) or stretched — a toggle. Upload accepts any
+video or image the browser can play; it stays in that browser.
+
+Built-in patterns: a pixel-map test card, colour bars, and four generated
+loops (saffron flow, stars, rise, ripple) so there is always something moving
+on the wall without downloading anything.
+
+## The rig
+
+Four heads up top, two on the deck. There is no truss in the model — the hall
+has 7.6 m walls and no ceiling — so every hang position is a number: pick a
+placement (front of house / over the stage / wide / above the LED for the top
+four; deck corners / upstage / hall floor / flanking the cabin for the pair) or
+move any head on its own x/y/z sliders.
+
+Each head has pan, tilt, colour, intensity and zoom (beam angle 4–60°), plus
+aim buttons that solve pan/tilt onto the chair, the cabin, centre stage, the
+forestage, the LED ends or the room. Tilt 0° is straight down for a hung head
+and straight up for one on the deck. Beams are raycast and stop on the first
+surface they hit (not the cabin glass), so the visible beam ends where the
+light lands. Each head is also a real shadow-casting spotlight, so the cabin,
+deck and drape take its colour.
+
+Looks are starting points: Darshan, Stage wash, Crossing beams, Into the room,
+Sweep, Aarti, Rig off. **Movement** oscillates every head about its aim.
+
+## Where things live
+
+| File | What |
+| --- | --- |
+| `public/haveli-stage.obj` / `.mtl` | The model, as supplied. Metres, +X house right, +Y up, +Z to the audience, origin at the main stage front edge on the hall floor. |
+| `lib/venue.ts` | The set-out read from the model: LED size/raster/position, cabin, stage, hall, aim targets, model groups. |
+| `lib/model.ts` | Loads the OBJ, swaps in lit materials by MTL name, gives `led_surface` planar UVs. |
+| `lib/led.ts` | The LED channel — video/image/canvas → unlit material — the built-in patterns, cover/stretch, the cabin-zone and 640 px guides. |
+| `lib/rig.ts` | Fixtures, placements, gels, looks, the yoke-and-head model, pan/tilt kinematics, beam cutting. |
+| `lib/state.ts` | The look as one object, defaults, coercion, the share-link codec. |
+| `lib/scene.ts` | Renderer, camera, orbit, bloom, the 4K still. |
+| `components/stage-viewer.tsx` | The page: scene wiring and the control panel. |
+
+To add a fixture: append to `defaultFixtures()` in `lib/rig.ts` and give it a
+slot in each `PLACEMENTS` entry for its group. To change the LED: edit `LED` in
+`lib/venue.ts`. To swap the model: replace the OBJ, keep the LED face named
+`led_surface`, and adjust `MODEL_GROUPS` name patterns and the numbers in
+`lib/venue.ts`.
+
+In the browser console, `__haveli` exposes `{ rig, scene, camera, led, model }`.

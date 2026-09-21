@@ -1,0 +1,71 @@
+@import 'tailwindcss';
+
+/* Dark by default — a stage is judged in a dark room. */
+:root {
+  --background: 20 6% 8%;
+  --foreground: 40 12% 92%;
+  --card: 24 8% 11%;
+  --card-foreground: 40 12% 92%;
+  --muted: 24 6% 16%;
+  --muted-foreground: 34 8% 62%;
+  --accent: 24 8% 18%;
+  --primary: 28 92% 58%;
+  --primary-foreground: 24 30% 8%;
+  --secondary: 24 7% 15%;
+  --secondary-foreground: 40 12% 90%;
+  --border: 24 8% 22%;
+  --ring: 28 92% 58%;
+  --ok: 152 60% 48%;
+  --warn: 40 92% 58%;
+  --bad: 4 82% 60%;
+  --scene-bg: #0f0e0c;
+  --font-sans: 'Onest', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+@theme inline {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-border: hsl(var(--border));
+  --color-ring: hsl(var(--ring));
+  --color-ok: hsl(var(--ok));
+  --color-warn: hsl(var(--warn));
+  --color-bad: hsl(var(--bad));
+  --font-sans: var(--font-sans);
+}
+
+html, body { height: 100%; }
+body {
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  -webkit-font-smoothing: antialiased;
+}
+html.viewer-page, html.viewer-page body { overflow: hidden; }
+
+.tabular { font-variant-numeric: tabular-nums; }
+.card-glass {
+  background: color-mix(in oklab, hsl(var(--card)) 82%, transparent);
+  backdrop-filter: blur(18px) saturate(1.2);
+  -webkit-backdrop-filter: blur(18px) saturate(1.2);
+  border: 1px solid color-mix(in oklab, hsl(var(--border)) 80%, transparent);
+}
+.dot-grid {
+  background-image: radial-gradient(circle at 1px 1px, hsl(var(--border) / 0.55) 1px, transparent 0);
+  background-size: 22px 22px;
+}
+* { border-color: var(--color-border); }
+input[type='color'] { -webkit-appearance: none; appearance: none; border: 0; padding: 0; background: transparent; }
+input[type='color']::-webkit-color-swatch-wrapper { padding: 0; }
+input[type='color']::-webkit-color-swatch { border: 1px solid hsl(var(--border)); border-radius: 4px; }
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { background: hsl(var(--muted)); border-radius: 8px; }
