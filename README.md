@@ -6,11 +6,12 @@ Same chassis as `ovo.content.baps.solutions` (Next.js 15, Three.js, Tailwind 4,
 Vercel) with none of the OVO-specific pipeline — the model loads straight from
 `public/haveli-stage.obj`.
 
-Two tools. `/stage` is the 3D stage: everything is a control on the left and
+Three tools. `/stage` is the 3D stage: everything is a control on the left and
 every control is in the share link. `/blocking` is scene blocking, cue by cue:
-a stage plan and a hall plan you drop markers on. `/` lists both, and every
-page has the site menu in its corner (Haveli · 3D stage · Scene blocking) to
-jump between them.
+a stage plan and a hall plan you drop markers on. `/wristbands` is the RFID
+wristband emulator: the hall from above, nine zones painted onto the seats.
+`/` lists them, and every page has the site menu in its corner to jump
+between them.
 
 ## Run it
 
@@ -104,6 +105,37 @@ before. *Cue list* gives plain text of every position and move.
   link it produces (`/blocking#s=…`) is the invitation and everyone on it edits
   the same document. **Backup** / **Import** move the plan as JSON.
 
+## Wristbands — `/wristbands`
+
+Every seat in the hall is one wristband — 2244 of them, from the same
+seating model as the blocking tool. Each belongs to one of nine zones (or
+none), and each zone has a colour, an effect and a level.
+
+- **Zones** — the list on the left is the palette: click a zone (or press
+  1–9; 0 erases) and paint it onto the hall with the **Brush** (1–6 seats
+  wide), a **Box**, a whole **Row** or a whole **Section**. The presets are
+  starting layouts: Grid 3 × 3, Stripes, Bands, Rings (out from the chair),
+  Fan (wedges from the chair), Sections, Checker, Clear. The count next to
+  each zone is how many wristbands it needs.
+- **Colour and effect** — any colour, or a gel from the same set as the
+  rig. Effects per zone: Solid, Slow pulse (≈4 s), Fast pulse (1 s), Flash
+  (a hit every 2 s), Strobe (10 Hz), Twinkle (every band sparkles on its
+  own), Off. **Chase** runs across the zones in order — 1→9, Bounce, Build,
+  Random — with a step time and a floor level for the zones not lit;
+  Rings + Chase is a ripple out from the stage. Master, Speed and Glow are
+  global. The Effects buttons are whole-hall looks to start from.
+- **From a picture** — drop in any drawing of the hall coloured by zone. It
+  sits under the seats (opacity, scale and position sliders line it up);
+  **Match zone colours** gives each seat the zone whose colour is nearest
+  the picture under it, and **Find 9 zones** finds the nine most distinct
+  colours in the picture, makes them the zone colours and assigns every
+  seat. Either way you can then paint over the result. The picture itself
+  doesn't travel in the link.
+- **Share** — **Copy link** carries the zone map, colours, effects and
+  view; **Render PNG** writes a 2400 px still with the zone counts along the
+  bottom; **Export / Import JSON** move the whole thing as a file. Autosaves
+  in the browser.
+
 ## Where things live
 
 | File | What |
@@ -121,6 +153,9 @@ before. *Cue list* gives plain text of every position and move.
 | `lib/blocking/app.js` | The blocking tool itself: markers, moves, panels, cue list, print, folder/zip export, Supabase sync, local autosave, cue-sheet import. |
 | `lib/blocking/cues.js` | The bundled cue sheet (generated from the xlsx's Cue_FINAL6AUG tab). |
 | `components/blocking/blocking-client.tsx`, `app/blocking/` | Its markup, styles and route. |
+| `lib/wristbands/model.ts` | Seats from the seating model, zones, effects, chase, presets, looks, state + share codec, the image → zones maths (nearest colour, k-means). |
+| `lib/wristbands/render.ts` | The top-down canvas drawing: room, stage, sections, one glowing dot per wristband. |
+| `components/wristbands/wristband-emulator.tsx`, `app/wristbands/` | The page: canvas loop, painting tools, the panel, underlay, share/export. |
 
 To add a fixture: append to `defaultFixtures()` in `lib/rig.ts` and give it a
 slot in each `PLACEMENTS` entry for its group. To change the LED: edit `LED` in

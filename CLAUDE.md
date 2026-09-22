@@ -84,6 +84,21 @@ list, no Vercel Blob). The model here loads straight from an OBJ.
    `~/Desktop/mySadhana/StageDiagramPrash/haveli-stage`, pushed over SSH
    (`git@github.com:vj7890/haveli-stage.git`); Vercel redeploys on push.
 
+10. **`/wristbands` — RFID wristband emulator.** Ved: "I have 9 zones …
+    top down view … change the colour of each zone … lighting effects like
+    slow pulse, flash", and the zone layout must be editable — "ideally I
+    give you an image and you figure out how to make it happen using the
+    zones", and he needs to see renders. Built as a 2D canvas page (no
+    Three.js): `lib/wristbands/model.ts` (seats from `buildHall(DEFAULT_VENUE)`
+    → 2244 wristbands; a `Uint8Array` zone per seat, RLE'd into `state.map`
+    for the link; presets; per-zone fx; chase; looks; k-means + nearest-
+    colour for the picture import), `lib/wristbands/render.ts` (draw), and
+    `components/wristbands/wristband-emulator.tsx` (loop, painting, panel).
+    The 3D view does **not** show wristbands yet (he chose "top-down page
+    only for now"). The next step he described: he sends a zone image, we
+    map it (the page can do it: drop it in → Find 9 zones / Match zone
+    colours), then decide and compromise.
+
 ## Run / build / deploy
 
 ```bash
@@ -105,6 +120,7 @@ app/
   page.tsx              home: a card per feature (from lib/features.ts)
   stage/page.tsx        renders <StageViewer/>
   blocking/page.tsx     renders <BlockingClient/>, imports blocking.css
+  wristbands/page.tsx   renders <WristbandEmulator/>
   blocking/blocking.css scoped under .blk; maps the site tokens onto the tool
 components/
   blocking/blocking-client.tsx  the tool's DOM (ids are the API app.js wires to)
@@ -114,6 +130,9 @@ components/
   viewer-layout.tsx     full-viewport shell: canvas, glass side panel, phone
                         drawer, corner + HUD slots; GroupLabel, Row helpers
   site-nav.tsx          the corner menu (usePathname lights the current tool)
+  wristbands/wristband-emulator.tsx  the wristband page: canvas in the
+                        ViewerLayout mount, rAF loop reading refs (state,
+                        map, view, underlay), pointer tools, the panel
   ui/{button,slider,switch}.tsx   minimal shadcn-style primitives (Radix)
 lib/
   venue.ts              SET-OUT NUMBERS from the OBJ: LED (px, size, x/y/z,
@@ -142,6 +161,13 @@ lib/
   utils.ts              cn, hex, clamp
   features.ts           FEATURES: href/label/blurb/icon per page — the menu
                         and the home page both map over it
+  wristbands/model.ts   Seat/Hall from buildHall(); PLAN furniture; Fx, Zone,
+                        WbState; encodeMap/decodeMap (RLE); PRESETS (grid,
+                        stripes, bands, rings, fan, sections, checker, clear);
+                        LOOKS; coerce/encodeShare/decodeShare; fxLevel(),
+                        twinkle(), chaseLevels(); kmeans(), nearestZone()
+  wristbands/render.ts  fitView() (inset for the panel), drawFrame(): room,
+                        stage, blocks, dots (additive halo + core), labels
   blocking/geometry.js  plan frame (STAGE_TOP, SY/UP), stage + hall plates,
                         DEFAULT_VENUE seating spec, buildHall(), seatAt(),
                         zoneAt()/stagePos()/hallLabel(); reads lib/venue.ts
@@ -218,6 +244,15 @@ public/
   paste JSON in *Seating*; it is stored in `show.venue`, so it syncs.
 - Blocking export: call `showDirectoryPicker()` **before** any rendering —
   the user gesture expires in a few seconds and 43 cues take longer.
+- Wristbands: the frame is x across, **y metres in front of the stage edge**
+  (positive into the hall; upstage is negative) — geometry.js's svg y minus
+  `STAGE_TOP`. Painting writes `mapRef` directly and commits the RLE string
+  on pointer-up; never derive the live map from `state.map` per frame.
+  `fitView` takes a left inset (384 px) so the room isn't under the panel.
+  Zone labels sit at each zone's centroid, which can land in an aisle for a
+  U-shaped zone — cosmetic. The underlay image is not in the share link.
+- Don't `pkill -f "next start"` from a Bash step that itself contains that
+  string — it kills the step (exit 144). `pkill -f next-server` is safe.
 
 ## What's deliberately not built (yet)
 
@@ -235,6 +270,9 @@ public/
   build can't fail on it.
 
 ## Open questions for Ved
+
+- The real wristband zone layout — he'll send a picture; map it with
+  **From a picture** on `/wristbands`, then adjust by hand.
 
 - Real hang positions / trim heights for the four top heads.
 - Whether any other surface is LED (wings? floor?).
