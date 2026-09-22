@@ -77,11 +77,9 @@ drawn from the same numbers as the 3D model) and a **hall plan** (the whole
 45 × 50 m room with seating). Pick a role on the right, click the plan to
 place a marker, drag to move, Alt-drag to copy, Delete to remove. *How many*
 turns a marker into a group — on the hall it draws across the seats it
-occupies and reads out "A2 · row 3 · seats 2–9". *Draw move* makes a numbered
+occupies and reads out "FL · row 3 · seats 15–26". *Draw move* makes a numbered
 arrow that belongs to whoever it starts on. *Previous cue* ghosts the cue
-before. *Cue list* gives plain text of every position and move for the
-script; *Print* does both plans and the list per cue; *Export PNG* saves a
-plan.
+before. *Cue list* gives plain text of every position and move.
 
 - **The cue sheet** — the tool starts with `Cue Sheet Master.xlsx` → tab
   *Cue_FINAL6AUG*: 43 cues in nine sections (Pre-Swami, Entry, Introduction,
