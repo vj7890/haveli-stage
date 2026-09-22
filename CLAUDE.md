@@ -63,6 +63,18 @@ list, no Vercel Blob). The model here loads straight from an OBJ.
    Surface ids are `stage` and `hall` (was `arena`); both share one coordinate
    frame (x across, svg y = 10 − metres upstage).
 
+8. **Real seating and cue sheet.** Ved supplied `Ground Floor Haveli Model 1.pdf`
+   (the prayer hall is four quadrants: centre line across, halfway line 29.85 m
+   from the stage's back wall, 19.3 m beyond; 44.12 m wide — matches the OBJ)
+   and `Cue Sheet Master.xlsx` (tab *Cue_FINAL6AUG*, 43 cues, nine sections;
+   start times are `#REF!` so only durations carry). `DEFAULT_VENUE` is now
+   those four sections (`FL FR BL BR`, positions 0.6 × 1.0 m for people
+   sitting), `lib/blocking/cues.js` is the sheet. He does **not** want the
+   script-doc integration — the Supabase image publishing was removed and
+   replaced by **Export…**: every cue's two plans + positions.txt into a
+   folder via the File System Access API, zip fallback (`zipStore()` in
+   app.js, store-only, no dependency).
+
 ## Run / build / deploy
 
 ```bash
@@ -121,6 +133,7 @@ lib/
   blocking/geometry.js  plan frame (STAGE_TOP, SY/UP), stage + hall plates,
                         DEFAULT_VENUE seating spec, buildHall(), seatAt(),
                         zoneAt()/stagePos()/hallLabel(); reads lib/venue.ts
+  blocking/cues.js      CUE_SHEET: [[code, title, [[no, item, duration, scene, presenters, notes]]]]
   blocking/app.js       mountBlocking(root) → teardown. Vanilla JS on purpose
                         (@ts-nocheck): the whole tool is closures over `show`;
                         do not React-ify piecemeal. Doc shape: show.v = 4,
@@ -186,9 +199,11 @@ public/
   the page has no chrome of its own; the top bar links back to `/stage`.
 - Blocking: `migrate()` drops `arena`-surface items from OVO-era (v3) docs —
   their coordinates were a different frame. Stage items carry over.
-- Blocking: the hall seating is a **placeholder**. `DEFAULT_VENUE` in
-  geometry.js is the shape to fill from the real plan; users can also paste
-  JSON in *Seating*. It is stored in `show.venue`, so it syncs.
+- Blocking: `DEFAULT_VENUE` is columns (x extents) × bands (metres in front
+  of the stage); `buildHall()` derives rows/seats from the pitches. Users can
+  paste JSON in *Seating*; it is stored in `show.venue`, so it syncs.
+- Blocking export: call `showDirectoryPicker()` **before** any rendering —
+  the user gesture expires in a few seconds and 43 cues take longer.
 
 ## What's deliberately not built (yet)
 
@@ -213,5 +228,5 @@ public/
   different source than `<video src>`.
 - Whether to add a cue-by-cue mode like the OVO content site (the blocking
   page now holds the cue list; the 3D looks could hang off the same cues).
-- The real Haveli seating plan (sections, rows, seats, aisles) for `/blocking`.
-- The cue sheet for this show, to paste into *Load cue sheet…*.
+- Whether the hall is chairs or floor sitting (positions are sized for sitting).
+- Who sits where — are FL/FR or BL/BR reserved (e.g. by gender or age group)?

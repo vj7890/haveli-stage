@@ -26,14 +26,13 @@ export default function BlockingClient() {
           <button type="button" className="tbtn" id="btnList">Cue list</button>
           <button type="button" className="tbtn" id="btnSetup">Seating</button>
           <button type="button" className="tbtn" id="btnPrint">Print</button>
-          <button type="button" className="tbtn" id="btnImages">Images</button>
           <div className="spacer" />
           <input className="who" id="who" placeholder="Your name" />
           <button type="button" className="tbtn" id="btnShare">Share</button>
           <button type="button" className="tbtn" id="btnBackup">Backup</button>
           <button type="button" className="tbtn" id="btnImport">Import</button>
           <input type="file" id="importFile" accept="application/json" style={{ display: 'none' }} />
-          <button type="button" className="tbtn key" id="btnPng">Export PNG</button>
+          <button type="button" className="tbtn key" id="btnPng">Export…</button>
           <div className="sync" id="sync">local only</div>
         </div>
 

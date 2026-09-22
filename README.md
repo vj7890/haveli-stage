@@ -83,21 +83,26 @@ before. *Cue list* gives plain text of every position and move for the
 script; *Print* does both plans and the list per cue; *Export PNG* saves a
 plan.
 
-- **Load cue sheet…** — paste rows from the cue sheet (tab-separated: section
-  code, section name, cue no., item, start, duration, presenters, props) and
-  the cue list rebuilds. No code to edit.
-- **Seating** — the hall layout is a placeholder (four sections of 20 chairs,
-  three bands of rows) until the real plan is known. Edit the JSON; markers
+- **The cue sheet** — the tool starts with `Cue Sheet Master.xlsx` → tab
+  *Cue_FINAL6AUG*: 43 cues in nine sections (Pre-Swami, Entry, Introduction,
+  Samagam, Smruti, Rajipo, Mahima, Nishkapat, Sukh), with each cue's duration,
+  act/scene and explanation in its notes. When the sheet changes, **Load cue
+  sheet…** takes rows pasted from it (tab-separated: section code, section
+  name, cue no., item, start, duration, presenters, props) — no code to edit.
+- **Seating** — the four sections of the prayer hall as the ground-floor plan
+  draws them: `FL`/`FR` in front of the halfway line, `BL`/`BR` behind it, a
+  position being one person sitting (0.6 m across, rows 1 m apart). The
+  dialog takes JSON if the pitches, extents or names need changing; markers
   stay put. `"seats": false` gives an open floor.
+- **Export…** — one PNG of the current view, or every cue's two plans written
+  straight into a folder you pick (Chrome/Edge; other browsers get a zip):
+  `07-SAM-cue7-stage.png`, `07-SAM-cue7-hall.png`, … numbered in running
+  order, plus `positions.txt` with every position and move. **Print** does
+  the same on paper. There is no script-doc integration.
 - **Saving** — the plan autosaves in the browser. For a shared, live plan,
   **Share** walks through creating a free Supabase project (four steps); the
   link it produces (`/blocking#s=…`) is the invitation and everyone on it edits
   the same document. **Backup** / **Import** move the plan as JSON.
-- **Images** — with Supabase connected, renders each cue's two plans to PNG at
-  fixed addresses (`…/plans/<doc>/<CODE>-cue<N>-stage.png` and `-hall.png`)
-  for the master sheet's `=IMAGE()` or the script-doc Apps Script. If you reuse
-  the JJ Apps Script, change its kinds from `['stage','arena']` to
-  `['stage','hall']`.
 
 ## Where things live
 
@@ -112,7 +117,8 @@ plan.
 | `lib/scene.ts` | Renderer, camera, orbit, bloom, the 4K still. |
 | `components/stage-viewer.tsx` | The page: scene wiring and the control panel. |
 | `lib/blocking/geometry.js` | The 2D plans: stage plate and hall plate from `lib/venue.ts`, the editable seating model, seat lookup, position labels. |
-| `lib/blocking/app.js` | The blocking tool itself: markers, moves, panels, cue list, print, PNG, Supabase sync and publishing, local autosave, cue-sheet import. |
+| `lib/blocking/app.js` | The blocking tool itself: markers, moves, panels, cue list, print, folder/zip export, Supabase sync, local autosave, cue-sheet import. |
+| `lib/blocking/cues.js` | The bundled cue sheet (generated from the xlsx's Cue_FINAL6AUG tab). |
 | `components/blocking/blocking-client.tsx`, `app/blocking/` | Its markup, styles and route. |
 
 To add a fixture: append to `defaultFixtures()` in `lib/rig.ts` and give it a
