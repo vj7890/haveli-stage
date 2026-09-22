@@ -6,8 +6,9 @@ Same chassis as `ovo.content.baps.solutions` (Next.js 15, Three.js, Tailwind 4,
 Vercel) with none of the OVO-specific pipeline — the model loads straight from
 `public/haveli-stage.obj`.
 
-One page, `/stage`. Everything is a control on the left; every control is in
-the share link.
+Two pages. `/stage` is the 3D stage: everything is a control on the left and
+every control is in the share link. `/blocking` is scene blocking, cue by cue:
+a stage plan and a hall plan you drop markers on.
 
 ## Run it
 
@@ -68,6 +69,36 @@ deck and drape take its colour.
 Looks are starting points: Darshan, Stage wash, Crossing beams, Into the room,
 Sweep, Aarti, Rig off. **Movement** oscillates every head about its aim.
 
+## Scene blocking — `/blocking`
+
+A port of the Janma Jayanti blocking tool onto this stage. For every cue:
+a **stage plan** (the deck, stairs, forestage, cabin and chair, LED, wings,
+drawn from the same numbers as the 3D model) and a **hall plan** (the whole
+45 × 50 m room with seating). Pick a role on the right, click the plan to
+place a marker, drag to move, Alt-drag to copy, Delete to remove. *How many*
+turns a marker into a group — on the hall it draws across the seats it
+occupies and reads out "A2 · row 3 · seats 2–9". *Draw move* makes a numbered
+arrow that belongs to whoever it starts on. *Previous cue* ghosts the cue
+before. *Cue list* gives plain text of every position and move for the
+script; *Print* does both plans and the list per cue; *Export PNG* saves a
+plan.
+
+- **Load cue sheet…** — paste rows from the cue sheet (tab-separated: section
+  code, section name, cue no., item, start, duration, presenters, props) and
+  the cue list rebuilds. No code to edit.
+- **Seating** — the hall layout is a placeholder (four sections of 20 chairs,
+  three bands of rows) until the real plan is known. Edit the JSON; markers
+  stay put. `"seats": false` gives an open floor.
+- **Saving** — the plan autosaves in the browser. For a shared, live plan,
+  **Share** walks through creating a free Supabase project (four steps); the
+  link it produces (`/blocking#s=…`) is the invitation and everyone on it edits
+  the same document. **Backup** / **Import** move the plan as JSON.
+- **Images** — with Supabase connected, renders each cue's two plans to PNG at
+  fixed addresses (`…/plans/<doc>/<CODE>-cue<N>-stage.png` and `-hall.png`)
+  for the master sheet's `=IMAGE()` or the script-doc Apps Script. If you reuse
+  the JJ Apps Script, change its kinds from `['stage','arena']` to
+  `['stage','hall']`.
+
 ## Where things live
 
 | File | What |
@@ -80,6 +111,9 @@ Sweep, Aarti, Rig off. **Movement** oscillates every head about its aim.
 | `lib/state.ts` | The look as one object, defaults, coercion, the share-link codec. |
 | `lib/scene.ts` | Renderer, camera, orbit, bloom, the 4K still. |
 | `components/stage-viewer.tsx` | The page: scene wiring and the control panel. |
+| `lib/blocking/geometry.js` | The 2D plans: stage plate and hall plate from `lib/venue.ts`, the editable seating model, seat lookup, position labels. |
+| `lib/blocking/app.js` | The blocking tool itself: markers, moves, panels, cue list, print, PNG, Supabase sync and publishing, local autosave, cue-sheet import. |
+| `components/blocking/blocking-client.tsx`, `app/blocking/` | Its markup, styles and route. |
 
 To add a fixture: append to `defaultFixtures()` in `lib/rig.ts` and give it a
 slot in each `PLACEMENTS` entry for its group. To change the LED: edit `LED` in

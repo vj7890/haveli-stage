@@ -49,6 +49,20 @@ list, no Vercel Blob). The model here loads straight from an OBJ.
    main`, then connect the repo in Vercel (Add New → Project → Deploy, no
    settings needed).
 
+7. **Added `/blocking`** — a port of Prash's "Scene Blocking" tool
+   (`StageDiagramPrash/index0.html`, a single-file vanilla-JS app for the OVO
+   show, with `HANDOVER-scene-blocking.md`) onto this site and this stage.
+   Kept: markers/groups/seat-snapping, numbered move arrows, ghosted previous
+   cue, cue list text, print, PNG export, Supabase live-sync via `#s=` link,
+   PNG publishing for the sheet/doc. Replaced: OVO `STAGE_CAD` → a stage plate
+   drawn from `lib/venue.ts`; the arena bowl → an editable Haveli floor-seating
+   model (placeholder numbers). Dropped: the shape-tracer/underlay mode (it
+   referenced venue fields that no longer exist and would have thrown) and the
+   Claude-artifact `window.storage` backend. Added: localStorage autosave when
+   not connected, a paste-TSV cue-sheet importer, a Backup **Import** button.
+   Surface ids are `stage` and `hall` (was `arena`); both share one coordinate
+   frame (x across, svg y = 10 − metres upstage).
+
 ## Run / build / deploy
 
 ```bash
@@ -69,7 +83,10 @@ app/
   globals.css           Tailwind 4 + HSL tokens (dark only), --scene-bg
   page.tsx              redirect → /stage
   stage/page.tsx        renders <StageViewer/>
+  blocking/page.tsx     renders <BlockingClient/>, imports blocking.css
+  blocking/blocking.css scoped under .blk; maps the site tokens onto the tool
 components/
+  blocking/blocking-client.tsx  the tool's DOM (ids are the API app.js wires to)
   stage-viewer.tsx      THE PAGE: scene wiring (useEffect IIFE), api ref,
                         apply(state, prev) diff-push, the whole control panel,
                         share/still/export/import
@@ -101,6 +118,14 @@ lib/
                         fitDistance(); houseLights()
   extras.ts             buildSizes() dimension arrows/labels, buildFigures()
   utils.ts              cn, hex, clamp
+  blocking/geometry.js  plan frame (STAGE_TOP, SY/UP), stage + hall plates,
+                        DEFAULT_VENUE seating spec, buildHall(), seatAt(),
+                        zoneAt()/stagePos()/hallLabel(); reads lib/venue.ts
+  blocking/app.js       mountBlocking(root) → teardown. Vanilla JS on purpose
+                        (@ts-nocheck): the whole tool is closures over `show`;
+                        do not React-ify piecemeal. Doc shape: show.v = 4,
+                        sections[].cues[].{items[], paths[]}, item.surface ∈
+                        {stage, hall}, item.seat = {block,r,s} on the hall
 public/
   haveli-stage.obj / .mtl   the model, as supplied — do not edit by hand
 ```
@@ -156,6 +181,15 @@ public/
 - `window.__haveli = { rig, scene, camera, led, model }` is a debug hook set
   after load; handy for `page.evaluate` probes.
 
+- Blocking: every DOM id in `blocking-client.tsx` is load-bearing — app.js
+  finds controls by id. The `.blk` root is `position: fixed; inset: 0`, so
+  the page has no chrome of its own; the top bar links back to `/stage`.
+- Blocking: `migrate()` drops `arena`-surface items from OVO-era (v3) docs —
+  their coordinates were a different frame. Stage items carry over.
+- Blocking: the hall seating is a **placeholder**. `DEFAULT_VENUE` in
+  geometry.js is the shape to fill from the real plan; users can also paste
+  JSON in *Seating*. It is stored in `show.venue`, so it syncs.
+
 ## What's deliberately not built (yet)
 
 - No cue list / per-cue looks (OVO's `/cues` + Google Sheet). Looks are presets
@@ -177,4 +211,7 @@ public/
 - Whether any other surface is LED (wings? floor?).
 - Whether content will also come as a live feed (NDI/capture) — needs a
   different source than `<video src>`.
-- Whether to add a cue-by-cue mode like the OVO content site.
+- Whether to add a cue-by-cue mode like the OVO content site (the blocking
+  page now holds the cue list; the 3D looks could hang off the same cues).
+- The real Haveli seating plan (sections, rows, seats, aisles) for `/blocking`.
+- The cue sheet for this show, to paste into *Load cue sheet…*.

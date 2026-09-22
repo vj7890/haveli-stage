@@ -361,6 +361,7 @@ export default function StageViewer() {
         <div className="flex flex-col items-end gap-1.5">
           <div className="bg-primary text-primary-foreground rounded-md px-2.5 py-1 text-[11px] font-bold tracking-[0.12em] shadow">HAVELI · {LED.px[0]} × {LED.px[1]}</div>
           <div className="card-glass text-muted-foreground rounded-md px-2 py-1 text-[10.5px]"><Copy className="mr-1 inline size-3" />{clipLabel} · {state.led.fit}</div>
+          <a href="/blocking" className="card-glass text-foreground hover:bg-accent rounded-md px-2 py-1 text-[11px] font-medium">Scene blocking →</a>
         </div>
       }
     />
