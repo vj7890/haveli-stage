@@ -43,11 +43,10 @@ list, no Vercel Blob). The model here loads straight from an OBJ.
    builds clean, no console errors, share link round-trips, every look and view
    screenshotted. Bugs found and fixed on the way (see *Gotchas*).
 6. **Delivered as a zip**; `git` initialised on `main` with one commit and
-   `origin` = `https://github.com/VJ7890/haveli-stage.git`. **The push has not
-   happened yet** — the cloud session's git proxy refused to attach
-   credentials for that repo. First job in Claude Code: `git push -u origin
-   main`, then connect the repo in Vercel (Add New → Project → Deploy, no
-   settings needed).
+   `origin` = `https://github.com/VJ7890/haveli-stage.git`. The cloud
+   session's git proxy would not push, so the first commit went up from the
+   Claude app and the rest from Ved's Mac (see item 9). Vercel:
+   https://haveli-stage-zyac.vercel.app (auto-detected, no settings).
 
 7. **Added `/blocking`** — a port of Prash's "Scene Blocking" tool
    (`StageDiagramPrash/index0.html`, a single-file vanilla-JS app for the OVO
@@ -75,6 +74,16 @@ list, no Vercel Blob). The model here loads straight from an OBJ.
    folder via the File System Access API, zip fallback (`zipStore()` in
    app.js, store-only, no dependency).
 
+9. **Site menu.** Ved: "when I go to the stage, there is no menu to go back
+   to choose another feature". Added `components/site-nav.tsx` (a glass pill:
+   Haveli · 3D stage · Scene blocking, current one lit, in the top-right of
+   `/stage` and the top bar of `/blocking`) and a home page at `/` with a card
+   per tool, both reading `lib/features.ts`. Adding a page = one entry there.
+   The blocking top bar's old `.brand` block (and its CSS) is gone.
+   By now the repo lives on Ved's Mac at
+   `~/Desktop/mySadhana/StageDiagramPrash/haveli-stage`, pushed over SSH
+   (`git@github.com:vj7890/haveli-stage.git`); Vercel redeploys on push.
+
 ## Run / build / deploy
 
 ```bash
@@ -93,7 +102,7 @@ Vercel: framework auto-detected (`vercel.json`), no env vars. Every push to
 app/
   layout.tsx            html.dark, Onest via <link>, dot-grid body
   globals.css           Tailwind 4 + HSL tokens (dark only), --scene-bg
-  page.tsx              redirect → /stage
+  page.tsx              home: a card per feature (from lib/features.ts)
   stage/page.tsx        renders <StageViewer/>
   blocking/page.tsx     renders <BlockingClient/>, imports blocking.css
   blocking/blocking.css scoped under .blk; maps the site tokens onto the tool
@@ -104,6 +113,7 @@ components/
                         share/still/export/import
   viewer-layout.tsx     full-viewport shell: canvas, glass side panel, phone
                         drawer, corner + HUD slots; GroupLabel, Row helpers
+  site-nav.tsx          the corner menu (usePathname lights the current tool)
   ui/{button,slider,switch}.tsx   minimal shadcn-style primitives (Radix)
 lib/
   venue.ts              SET-OUT NUMBERS from the OBJ: LED (px, size, x/y/z,
@@ -130,6 +140,8 @@ lib/
                         fitDistance(); houseLights()
   extras.ts             buildSizes() dimension arrows/labels, buildFigures()
   utils.ts              cn, hex, clamp
+  features.ts           FEATURES: href/label/blurb/icon per page — the menu
+                        and the home page both map over it
   blocking/geometry.js  plan frame (STAGE_TOP, SY/UP), stage + hall plates,
                         DEFAULT_VENUE seating spec, buildHall(), seatAt(),
                         zoneAt()/stagePos()/hallLabel(); reads lib/venue.ts
@@ -196,7 +208,9 @@ public/
 
 - Blocking: every DOM id in `blocking-client.tsx` is load-bearing — app.js
   finds controls by id. The `.blk` root is `position: fixed; inset: 0`, so
-  the page has no chrome of its own; the top bar links back to `/stage`.
+  the page has no chrome of its own; `<SiteNav/>` in its top bar is the way
+  out. blocking.css has no generic `.blk a` rule — keep it that way or the
+  menu's Tailwind classes lose (unlayered CSS beats `@layer utilities`).
 - Blocking: `migrate()` drops `arena`-surface items from OVO-era (v3) docs —
   their coordinates were a different frame. Stage items carry over.
 - Blocking: `DEFAULT_VENUE` is columns (x extents) × bands (metres in front

@@ -1,8 +1,8 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
-import Link from 'next/link'
 import { mountBlocking } from '@/lib/blocking/app'
+import { SiteNav } from '@/components/site-nav'
 
 /**
  * The blocking tool's markup. All behaviour lives in lib/blocking/app.js,
@@ -21,7 +21,7 @@ export default function BlockingClient() {
     <div ref={root} className="blk">
       <div className="app">
         <div className="top">
-          <div className="brand"><b>Scene blocking</b><span>Haveli stage</span><Link href="/stage">3D stage →</Link></div>
+          <SiteNav />
           <button type="button" className="tbtn" id="btnRoles">Roles</button>
           <button type="button" className="tbtn" id="btnList">Cue list</button>
           <button type="button" className="tbtn" id="btnSetup">Seating</button>

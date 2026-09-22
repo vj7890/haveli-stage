@@ -6,9 +6,11 @@ Same chassis as `ovo.content.baps.solutions` (Next.js 15, Three.js, Tailwind 4,
 Vercel) with none of the OVO-specific pipeline — the model loads straight from
 `public/haveli-stage.obj`.
 
-Two pages. `/stage` is the 3D stage: everything is a control on the left and
+Two tools. `/stage` is the 3D stage: everything is a control on the left and
 every control is in the share link. `/blocking` is scene blocking, cue by cue:
-a stage plan and a hall plan you drop markers on.
+a stage plan and a hall plan you drop markers on. `/` lists both, and every
+page has the site menu in its corner (Haveli · 3D stage · Scene blocking) to
+jump between them.
 
 ## Run it
 
@@ -114,6 +116,7 @@ before. *Cue list* gives plain text of every position and move.
 | `lib/state.ts` | The look as one object, defaults, coercion, the share-link codec. |
 | `lib/scene.ts` | Renderer, camera, orbit, bloom, the 4K still. |
 | `components/stage-viewer.tsx` | The page: scene wiring and the control panel. |
+| `lib/features.ts`, `components/site-nav.tsx`, `app/page.tsx` | The list of tools, the corner menu every page carries, and the home page built from that list. |
 | `lib/blocking/geometry.js` | The 2D plans: stage plate and hall plate from `lib/venue.ts`, the editable seating model, seat lookup, position labels. |
 | `lib/blocking/app.js` | The blocking tool itself: markers, moves, panels, cue list, print, folder/zip export, Supabase sync, local autosave, cue-sheet import. |
 | `lib/blocking/cues.js` | The bundled cue sheet (generated from the xlsx's Cue_FINAL6AUG tab). |
