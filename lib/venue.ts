@@ -16,6 +16,20 @@ export const LED = {
 }
 
 export const STAGE = { deckH: 1.3, frontW: 22.5, midW: 26.3, depth: 7.5, foreH: 1.1, foreW: 9.75, foreD: 4.88 }
+/**
+ * The performance stage in front of the main stage: 40 × 16 ft (Ved, Oct 2026),
+ * centred on the centreline, its back edge on the main stage's front edge.
+ * It replaces the OBJ's 9.75 m forestage in the 2D plans; the 3D model still
+ * has the old forestage. Laid as 8 × 4 ft decks, 5 across × 4 deep.
+ */
+export const FT = 0.3048
+export const PERF = { w: 40 * FT, d: 16 * FT, wFt: 40, dFt: 16, deckFt: [8, 4] as [number, number] }
+/**
+ * Ramps from the hall floor up onto the performance stage, one each side,
+ * running its full depth and rising toward the stage. Read off photos, not a
+ * drawing — change the width or length here when the real numbers come.
+ */
+export const RAMP = { w: 1.5, len: 16 * FT }
 export const HALL = { w: 45, d: 50, wallH: 7.6, floorZ: [-7.5, 42.5] as [number, number] }
 export const CABIN = { x: [-3.72, 3.72] as [number, number], y: [1.66, 4.965] as [number, number], z: [-6.05, -0.3] as [number, number], plinthH: 0.36 }
 export const CHAIR = { x: 0, y: 2.02, z: -3.35 }

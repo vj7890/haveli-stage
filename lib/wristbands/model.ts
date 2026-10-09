@@ -8,7 +8,7 @@
  * is exactly a set of blocking positions.
  */
 import { buildHall, DEFAULT_VENUE, DECK_OUTLINE, STAGE_TOP, seatXY } from '@/lib/blocking/geometry'
-import { CABIN, CHAIR, HALL, LED, STAGE } from '@/lib/venue'
+import { CABIN, CHAIR, HALL, LED, PERF, STAGE } from '@/lib/venue'
 import { clamp } from '@/lib/utils'
 
 export type Seat = { i: number; block: string; r: number; s: number; x: number; y: number }
@@ -48,7 +48,7 @@ export function buildSeats(venue: unknown = DEFAULT_VENUE): Hall {
 /** Plan furniture for the drawing, in the same frame. */
 export const PLAN = {
   deck: DECK_OUTLINE.map(([x, up]) => [x, -up] as [number, number]),
-  fore: { x0: -STAGE.foreW / 2, x1: STAGE.foreW / 2, y0: 0, y1: STAGE.foreD },
+  fore: { x0: -PERF.w / 2, x1: PERF.w / 2, y0: 0, y1: PERF.d },
   led: { x0: LED.x[0], x1: LED.x[1], y: LED.z },
   cabin: { x0: CABIN.x[0], x1: CABIN.x[1], y0: CABIN.z[0], y1: CABIN.z[1] },
   chair: { x: CHAIR.x, y: CHAIR.z },

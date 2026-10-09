@@ -7,8 +7,8 @@ Vercel) with none of the OVO-specific pipeline — the model loads straight from
 `public/haveli-stage.obj`.
 
 Three tools. `/stage` is the 3D stage: everything is a control on the left and
-every control is in the share link. `/blocking` is scene blocking, cue by cue:
-a stage plan and a hall plan you drop markers on. `/wristbands` is the RFID
+every control is in the share link. `/blocking` is stage setup: a plan of the
+stage you drop people and props on, saved as named setups and exported as PNGs. `/wristbands` is the RFID
 wristband emulator: the hall from above, nine zones painted onto the seats.
 `/` lists them, and every page has the site menu in its corner to jump
 between them.
@@ -72,38 +72,29 @@ deck and drape take its colour.
 Looks are starting points: Darshan, Stage wash, Crossing beams, Into the room,
 Sweep, Aarti, Rig off. **Movement** oscillates every head about its aim.
 
-## Scene blocking — `/blocking`
+## Stage setup — `/blocking`
 
-A port of the Janma Jayanti blocking tool onto this stage. For every cue:
-a **stage plan** (the deck, stairs, forestage, cabin and chair, LED, wings,
-drawn from the same numbers as the 3D model) and a **hall plan** (the whole
-45 × 50 m room with seating). Pick a role on the right, click the plan to
-place a marker, drag to move, Alt-drag to copy, Delete to remove. *How many*
-turns a marker into a group — on the hall it draws across the seats it
-occupies and reads out "FL · row 3 · seats 15–26". *Draw move* makes a numbered
-arrow that belongs to whoever it starts on. *Previous cue* ghosts the cue
-before. *Cue list* gives plain text of every position and move.
+A plan of the Haveli stage to show who stands where: the main stage, the
+cabin, the LED wall and the **performance stage, 40 × 16 ft**, with a ramp on
+each side. Pick a role in the toolbar at the bottom and click the plan to
+place markers (Esc when done). Drag to move, Alt-drag to copy, double-click to
+name one, Delete to remove. The arrow tool draws a move. **Hall** zooms out to
+the whole room with its seating; it is the same plan, so markers carry over.
 
-- **The cue sheet** — the tool starts with `Cue Sheet Master.xlsx` → tab
-  *Cue_FINAL6AUG*: 43 cues in nine sections (Pre-Swami, Entry, Introduction,
-  Samagam, Smruti, Rajipo, Mahima, Nishkapat, Sukh), with each cue's duration,
-  act/scene and explanation in its notes. When the sheet changes, **Load cue
-  sheet…** takes rows pasted from it (tab-separated: section code, section
-  name, cue no., item, start, duration, presenters, props) — no code to edit.
-- **Seating** — the four sections of the prayer hall as the ground-floor plan
-  draws them: `FL`/`FR` in front of the halfway line, `BL`/`BR` behind it, a
-  position being one person sitting (0.6 m across, rows 1 m apart). The
-  dialog takes JSON if the pitches, extents or names need changing; markers
-  stay put. `"seats": false` gives an open floor.
-- **Export…** — one PNG of the current view, or every cue's two plans written
-  straight into a folder you pick (Chrome/Edge; other browsers get a zip):
-  `07-SAM-cue7-stage.png`, `07-SAM-cue7-hall.png`, … numbered in running
-  order, plus `positions.txt` with every position and move. **Print** does
-  the same on paper. There is no script-doc integration.
-- **Saving** — the plan autosaves in the browser. For a shared, live plan,
-  **Share** walks through creating a free Supabase project (four steps); the
-  link it produces (`/blocking#s=…`) is the invitation and everyone on it edits
-  the same document. **Backup** / **Import** move the plan as JSON.
+- **Setups** — the list on the left. Each one is a named layout. They save in
+  this browser as you work. **Duplicate** keeps a version before you change it.
+- **Export PNG** — the open setup as a 3200 px picture with its name on top and
+  a key of who is on. **Export all as PNGs** puts every setup in one zip.
+- **Backup / Load** — all setups as one JSON file, to move them between
+  computers or keep a copy. Loading merges: the newer copy of a setup wins.
+- **Copy link to this setup** — a link that opens the setup for anyone.
+
+Keys: `V` select, `A` arrow, `1`–`9` the first nine roles, `⌘Z` / `⇧⌘Z` undo
+and redo, wheel or pinch to zoom, drag empty floor (or shift-drag) to pan.
+
+The ramps are drawn from photos, not a drawing: change `RAMP` in
+`lib/venue.ts` when the real size and position are known. The performance
+stage is `PERF` there; the 3D model still has the old 9.75 m forestage.
 
 ## Wristbands — `/wristbands`
 
@@ -149,10 +140,10 @@ none), and each zone has a colour, an effect and a level.
 | `lib/scene.ts` | Renderer, camera, orbit, bloom, the 4K still. |
 | `components/stage-viewer.tsx` | The page: scene wiring and the control panel. |
 | `lib/features.ts`, `components/site-nav.tsx`, `app/page.tsx` | The list of tools, the corner menu every page carries, and the home page built from that list. |
-| `lib/blocking/geometry.js` | The 2D plans: stage plate and hall plate from `lib/venue.ts`, the editable seating model, seat lookup, position labels. |
-| `lib/blocking/app.js` | The blocking tool itself: markers, moves, panels, cue list, print, folder/zip export, Supabase sync, local autosave, cue-sheet import. |
-| `lib/blocking/cues.js` | The bundled cue sheet (generated from the xlsx's Cue_FINAL6AUG tab). |
-| `components/blocking/blocking-client.tsx`, `app/blocking/` | Its markup, styles and route. |
+| `lib/blocking/geometry.js` | The main stage outline and the hall's seating model, shared by stage setup and wristbands. |
+| `lib/blocking/setups.ts` | Setups and roles, browser saving, backup merge, the share link, the zip writer, carrying over the old cue tool's markers. |
+| `components/blocking/plan.tsx` | The plan drawing, used both live and for the PNG export. |
+| `components/blocking/stage-setup.tsx`, `app/blocking/` | The page: setups list, plan, toolbar, marker editor, export. |
 | `lib/wristbands/model.ts` | Seats from the seating model, zones, effects, chase, presets, looks, state + share codec, the image → zones maths (nearest colour, k-means). |
 | `lib/wristbands/render.ts` | The top-down canvas drawing: room, stage, sections, one glowing dot per wristband. |
 | `components/wristbands/wristband-emulator.tsx`, `app/wristbands/` | The page: canvas loop, painting tools, the panel, underlay, share/export. |

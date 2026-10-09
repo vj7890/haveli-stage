@@ -99,6 +99,24 @@ list, no Vercel Blob). The model here loads straight from an OBJ.
     map it (the page can do it: drop it in → Find 9 zones / Match zone
     colours), then decide and compromise.
 
+11. **Stage setup replaces cue-by-cue blocking (9 Oct 2026).** Ved: "I do
+    not need it cue by cue, I will just export them, maybe a saving option…
+    It is too complicated, too much text everywhere, make it simpler. The
+    performance stage is 40 feet by 16 feet. There are ramps" (with photos).
+    `/blocking` is now a React page (`components/blocking/stage-setup.tsx`
+    + `plan.tsx`, data in `lib/blocking/setups.ts`): named setups saved in
+    localStorage (`haveli-setups-v1`), duplicate/delete, undo, backup JSON,
+    `#setup=` share link, PNG export (same drawing rendered off-screen,
+    3200 px, title + key) and export-all zip. One frame: x across, z toward
+    the audience (the OBJ's z). Removed: sections/cues, the cue sheet,
+    roles editor, seating dialog, print, Supabase sync, the old app.js/cues.js.
+    On first load the old `haveli-blocking-v1` doc's non-empty cues become
+    setups named "PRE · 1 · Kirtan Aradhana". `PERF` (12.19 × 4.88 m, 8 × 4 ft
+    decks) and `RAMP` (1.5 m wide, full depth, each side, rising to the stage)
+    are in `lib/venue.ts`; the ramps are read off photos — unconfirmed. The
+    wristbands plan uses `PERF` too. The 3D OBJ still has the 9.75 m forestage
+    and no ramps.
+
 ## Run / build / deploy
 
 ```bash
@@ -119,11 +137,13 @@ app/
   globals.css           Tailwind 4 + HSL tokens (dark only), --scene-bg
   page.tsx              home: a card per feature (from lib/features.ts)
   stage/page.tsx        renders <StageViewer/>
-  blocking/page.tsx     renders <BlockingClient/>, imports blocking.css
+  blocking/page.tsx     renders <StageSetup/>
   wristbands/page.tsx   renders <WristbandEmulator/>
-  blocking/blocking.css scoped under .blk; maps the site tokens onto the tool
 components/
-  blocking/blocking-client.tsx  the tool's DOM (ids are the API app.js wires to)
+  blocking/stage-setup.tsx  the stage-setup page: setups list, SVG plan with
+                        pointer tools, marker editor, export/backup/link
+  blocking/plan.tsx     Venue, MarkerArt, ArrowArt, ExportSheet, FIT views —
+                        one drawing for the live plan and the PNG
   stage-viewer.tsx      THE PAGE: scene wiring (useEffect IIFE), api ref,
                         apply(state, prev) diff-push, the whole control panel,
                         share/still/export/import
@@ -168,15 +188,11 @@ lib/
                         twinkle(), chaseLevels(); kmeans(), nearestZone()
   wristbands/render.ts  fitView() (inset for the panel), drawFrame(): room,
                         stage, blocks, dots (additive halo + core), labels
-  blocking/geometry.js  plan frame (STAGE_TOP, SY/UP), stage + hall plates,
-                        DEFAULT_VENUE seating spec, buildHall(), seatAt(),
-                        zoneAt()/stagePos()/hallLabel(); reads lib/venue.ts
-  blocking/cues.js      CUE_SHEET: [[code, title, [[no, item, duration, scene, presenters, notes]]]]
-  blocking/app.js       mountBlocking(root) → teardown. Vanilla JS on purpose
-                        (@ts-nocheck): the whole tool is closures over `show`;
-                        do not React-ify piecemeal. Doc shape: show.v = 4,
-                        sections[].cues[].{items[], paths[]}, item.surface ∈
-                        {stage, hall}, item.seat = {block,r,s} on the hall
+  blocking/geometry.js  main-stage outline (MAIN, STAIR, WING, DRAPE, CORDON,
+                        DECK_OUTLINE), DEFAULT_VENUE seating, buildHall(),
+                        seatXY/seatAt; svg y = STAGE_TOP − upstage metres
+  blocking/setups.ts    Setup/Role/Marker types, ROLES, load/save/merge,
+                        old-tool migration, encodeLink/decodeLink, zipStore
 public/
   haveli-stage.obj / .mtl   the model, as supplied — do not edit by hand
 ```
@@ -232,18 +248,15 @@ public/
 - `window.__haveli = { rig, scene, camera, led, model }` is a debug hook set
   after load; handy for `page.evaluate` probes.
 
-- Blocking: every DOM id in `blocking-client.tsx` is load-bearing — app.js
-  finds controls by id. The `.blk` root is `position: fixed; inset: 0`, so
-  the page has no chrome of its own; `<SiteNav/>` in its top bar is the way
-  out. blocking.css has no generic `.blk a` rule — keep it that way or the
-  menu's Tailwind classes lose (unlayered CSS beats `@layer utilities`).
-- Blocking: `migrate()` drops `arena`-surface items from OVO-era (v3) docs —
-  their coordinates were a different frame. Stage items carry over.
-- Blocking: `DEFAULT_VENUE` is columns (x extents) × bands (metres in front
-  of the stage); `buildHall()` derives rows/seats from the pitches. Users can
-  paste JSON in *Seating*; it is stored in `show.venue`, so it syncs.
-- Blocking export: call `showDirectoryPicker()` **before** any rendering —
-  the user gesture expires in a few seconds and 43 cues take longer.
+- Stage setup: pointer events are captured on the `<svg>` during drags, so
+  click/dblclick land on the svg — double-click finds the marker with
+  `elementFromPoint(...).closest('[data-mid]')`. PointerEvent `detail` is 0
+  in Chrome; don't use it for click counts.
+- Stage setup: a `#setup=` link pasted into an already-open tab only fires
+  `hashchange`; the page listens for it.
+- Stage setup export renders `<ExportSheet>` with `createRoot` + `flushSync`
+  into a detached div and serialises with XMLSerializer. Fonts fall back to
+  Helvetica in the PNG (an SVG-as-image can't see page fonts).
 - Wristbands: the frame is x across, **y metres in front of the stage edge**
   (positive into the hall; upstage is negative) — geometry.js's svg y minus
   `STAGE_TOP`. Painting writes `mapRef` directly and commits the RLE string
@@ -278,7 +291,7 @@ public/
 - Whether any other surface is LED (wings? floor?).
 - Whether content will also come as a live feed (NDI/capture) — needs a
   different source than `<video src>`.
-- Whether to add a cue-by-cue mode like the OVO content site (the blocking
-  page now holds the cue list; the 3D looks could hang off the same cues).
+- Where the ramps really are, and their width (drawn from photos, `RAMP`).
+- Whether the 3D model should get the 40 × 16 ft performance stage and ramps.
 - Whether the hall is chairs or floor sitting (positions are sized for sitting).
 - Who sits where — are FL/FR or BL/BR reserved (e.g. by gender or age group)?

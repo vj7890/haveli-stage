@@ -1,9 +1,8 @@
 import type { Metadata } from 'next'
-import BlockingClient from '@/components/blocking/blocking-client'
-import './blocking.css'
+import StageSetup from '@/components/blocking/stage-setup'
 
-export const metadata: Metadata = { title: 'Scene blocking — Haveli stage' }
+export const metadata: Metadata = { title: 'Stage setup — Haveli' }
 
 export default function BlockingPage() {
-  return <BlockingClient />
+  return <StageSetup />
 }

@@ -6,7 +6,7 @@ import { Box, Map, Watch } from 'lucide-react'
  */
 export const FEATURES = [
   { href: '/stage', label: '3D stage', blurb: 'Content on the back LED at its real size, six moving heads, a shareable look.', Icon: Box },
-  { href: '/blocking', label: 'Scene blocking', blurb: 'Who is where on the stage and in the hall, cue by cue, exported as plans.', Icon: Map },
+  { href: '/blocking', label: 'Stage setup', blurb: 'Who is where on the stage: place people and props, save each setup, export it as a PNG.', Icon: Map },
   { href: '/wristbands', label: 'Wristbands', blurb: 'The RFID wristbands from above: nine zones painted onto the seats, a colour and an effect each.', Icon: Watch },
 ] as const
 
